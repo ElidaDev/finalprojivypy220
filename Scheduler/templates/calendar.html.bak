@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Employee Calendar</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            background-color: #263238;
+            color: white;
+            padding: 20px 40px;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .container {
+            width: 90%;
+            margin: 25px auto;
+        }
+
+        .topBar {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .topBar select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .button {
+            background-color: #37474f;
+            color: white;
+            padding: 9px 14px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-left: 5px;
+        }
+
+        .button:hover {
+            background-color: #546e7a;
+        }
+
+        .monthNavigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .monthNavigation h2 {
+            margin: 0;
+        }
+
+        .calendar {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .weekHeader {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            background-color: #37474f;
+            color: white;
+        }
+
+        .weekHeader div {
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .week {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+        }
+
+        .day {
+            height: 155px;
+            overflow-y: auto;
+            border-right: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+            padding: 8px;
+            background-color: white;
+        }
+
+        .emptyDay {
+            background-color: #f5f5f5;
+        }
+
+        .dayNumber {
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .shift {
+            background-color: #dceeff;
+            border-left: 4px solid #1976d2;
+            padding: 5px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .event {
+            background-color: #e8f5e9;
+            border-left: 4px solid #388e3c;
+            padding: 5px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .shift a,
+        .event a {
+            color: #222;
+            text-decoration: none;
+        }
+
+        .shift a:hover,
+        .event a:hover {
+            text-decoration: underline;
+        }
+
+        .addButtons {
+            margin-top: 20px;
+        }
+
+.shiftButtons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.shiftButtons a {
+    color: #222;
+    text-decoration: none;
+}
+
+.shiftButtons a:hover {
+    text-decoration: underline;
+}
+
+.shiftButtons > a:last-child {
+    margin-left: auto;
+    background-color: #388e3c;
+    color: white;
+    padding: 4px 7px;
+    border-radius: 4px;
+}
+
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="header">
+    <h1>Employee Calendar</h1>
+</div>
+
+<div class="container">
+    <div class="topBar">
+        <form method="get">
+            <label for="employee">Employee:</label>
+            <select name="employee" id="employee" onchange="this.form.submit()">
+                <option value="">All Employees</option>
+                {% for employee in employees %}
+                    <option value="{{ employee.id }}"
+                        {% if selectedEmployee == employee.id|stringformat:"s" %}
+                            selected
+                        {% endif %}>
+                        {{ employee.firstName }} {{ employee.lastName }}
+                    </option>
+                {% endfor %}
+            </select>
+        </form>
+        <div>
+            <a class="button" href="{% url 'addShift' %}">Add Shift</a>
+            <a class="button" href="{% url 'addShiftEvent' %}">Add Event</a>
+        </div>
+    </div>
+
+    <div class="monthNavigation">
+        <a class="button" href="?year={{ year }}&month={{ month|add:'-1' }}{% if selectedEmployee %}&employee={{ selectedEmployee }}{% endif %}">
+            Previous
+        </a>
+
+        <h2>{{ monthName }} {{ year }}</h2>
+
+        <a class="button" href="?year={{ year }}&month={{ month|add:'1' }}{% if selectedEmployee %}&employee={{ selectedEmployee }}{% endif %}">
+            Next
+        </a>
+
+    </div>
+
+
+    <div class="calendar">
+
+        <div class="weekHeader">
+
+            <div>Sunday</div>
+            <div>Monday</div>
+            <div>Tuesday</div>
+            <div>Wednesday</div>
+            <div>Thursday</div>
+            <div>Friday</div>
+            <div>Saturday</div>
+
+        </div>
+
+
+        {% for week in weeks %}
+            <div class="week">
+                {% for day in week %}
+                    {% if day == 0 %}
+                        <div class="day emptyDay"></div>
+                    {% else %}
+                        <div class="day">
+                            <div class="dayNumber">
+                                {{ day }}
+                            </div>
+                            {% for shift in shifts %}
+                                {% if shift.startDateTime.day == day %}
+                                    <div class="shift">
+                                        <div class="shiftButtons">
+                                            <div>
+                                             <a href="{% url 'editShift' shift.id %}"> Edit </a>
+                                             <a href="{% url 'deleteShift' shift.id %}"> Delete </a>
+                                            </div>
+                                            <a href="{% url 'addShiftEvent' %}?shift={{ shift.id }}"> Add Event </a>
+                                        </div>
+                                        <br>
+                                        <strong>
+                                                Shift -{{ shift.employee.firstName }} {{ shift.employee.lastName }}
+                                            </strong>
+                                            <br>
+                                            {{ shift.startDateTime|date:"g:i A" }}
+                                            -
+                                            {{ shift.endDateTime|date:"g:i A" }}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% for event in events %}
+                                {% if event.startDateTime.day == day %}
+                                    <div class="event">
+                                        <a href="{% url 'editShiftEvent' event.id %}">
+                                        Edit
+                                        </a>
+                                        <a href="{% url 'deleteShiftEvent' event.id %}">
+                                        Delete
+                                        </a>
+                                        <br>
+                                            <strong>
+                                                {{ event.name }} - {{ event.shift.employee.firstName}} {{ event.shift.employee.lastName}}
+                                            </strong>
+                                            <br>
+                                            {{ event.startDateTime|date:"g:i A" }}
+                                            -
+                                            {{ event.endDateTime|date:"g:i A" }}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+</body>
+</html>

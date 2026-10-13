@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Schedules</title>
+</head>
+<body>
+
+    <h1>Shift Schedule</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Employee</th>
+                <th>Position</th>
+                <th>Email</th>
+                <th>Start</th>
+                <th>End</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for shift in shifts %}
+                <tr>
+                    <td>
+                        {{ shift.employee.firstName }}
+                        {{ shift.employee.lastName }}
+                    </td>
+                    <td>{{ shift.employee.position }}</td>
+                    <td>{{ shift.employee.email }}</td>
+                    <td>{{ shift.startDateTime|date:"m/d/Y g:i A" }}</td>
+                    <td>{{ shift.endDateTime|date:"m/d/Y g:i A" }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>

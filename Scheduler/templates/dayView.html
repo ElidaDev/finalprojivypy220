@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Day View</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            background-color: #263238;
+            color: white;
+            padding: 20px 40px;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .container {
+            width: 90%;
+            margin: 25px auto;
+        }
+
+        .dayHeader {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .dayHeader h1 {
+            margin: 0 0 8px 0;
+        }
+
+        .dayHeader h2 {
+            margin: 0;
+            color: #555;
+        }
+
+        .section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .section h2 {
+            margin-top: 0;
+            color: #263238;
+        }
+
+        .shift {
+            background-color: #dceeff;
+            border-left: 4px solid #1976d2;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .event {
+            background-color: #e8f5e9;
+            border-left: 4px solid #388e3c;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .time {
+            font-weight: bold;
+            color: #37474f;
+            margin-bottom: 5px;
+        }
+
+        .title {
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .buttons a {
+            color: #37474f;
+            text-decoration: none;
+            margin-right: 12px;
+            font-size: 13px;
+        }
+
+        .buttons a:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>Employee Calendar</h1>
+    </div>
+
+    <div class="container">
+
+        <div class="dayHeader">
+            <h1>
+                {{ employee.firstName }} {{ employee.lastName }}
+            </h1>
+
+            <h2>
+                {{ date }}
+            </h2>
+        </div>
+
+
+        <div class="section">
+
+            <h2>Shifts</h2>
+
+            {% for shift in shifts %}
+
+                <div class="shift">
+
+                    <div class="time">
+                        {{ shift.startDateTime|date:"g:i A" }}
+                        -
+                        {{ shift.endDateTime|date:"g:i A" }}
+                    </div>
+
+                    <div class="title">
+                        SHIFT
+                    </div>
+
+                    <div class="buttons">
+
+                        <a href="{% url 'editShift' shift.id %}">
+                            Edit
+                        </a>
+
+                        <a href="{% url 'deleteShift' shift.id %}">
+                            Delete
+                        </a>
+
+                        <a href="{% url 'addShiftEvent' %}?shift={{ shift.id }}">
+                            Add Event
+                        </a>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+
+        <div class="section">
+
+            <h2>Events</h2>
+
+            {% for event in events %}
+
+                <div class="event">
+
+                    <div class="time">
+                        {{ event.startDateTime|date:"g:i A" }}
+                        -
+                        {{ event.endDateTime|date:"g:i A" }}
+                    </div>
+
+                    <div class="title">
+                        {{ event.name }}
+                    </div>
+
+                    <div class="buttons">
+
+                        <a href="{% url 'editShiftEvent' event.id %}">
+                            Edit
+                        </a>
+
+                        <a href="{% url 'deleteShiftEvent' event.id %}">
+                            Delete
+                        </a>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>
+
